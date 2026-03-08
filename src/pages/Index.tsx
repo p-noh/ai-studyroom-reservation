@@ -20,7 +20,7 @@ export default function Index() {
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex h-screen flex-col bg-background overflow-hidden">
       {/* Header */}
       <header className="border-b border-border bg-card px-6 py-5 shadow-sm">
         <div className="mx-auto max-w-7xl">
