@@ -10,13 +10,18 @@ interface DebugData {
   people: number | null;
   room_type: string | null;
   status: string;
-  alternatives: { label: string; time: string; room: string }[];
+  alternatives: { start_time: string; end_time: string; room_type: string }[];
 }
 
 interface AIDebugLogProps {
   parsedRequest: ParsedRequest | null;
   suggestions?: Suggestion[];
   hasConflict?: boolean;
+}
+
+function computeEndTime(startTime: string, duration: number): string {
+  const hour = parseInt(startTime.split(':')[0]) + duration;
+  return `${hour.toString().padStart(2, '0')}:00`;
 }
 
 function buildDebugData(req: ParsedRequest | null, suggestions: Suggestion[], hasConflict: boolean): DebugData {
@@ -33,15 +38,21 @@ function buildDebugData(req: ParsedRequest | null, suggestions: Suggestion[], ha
     };
   }
 
+  const endTime = req.endTime ?? computeEndTime(req.time, req.duration);
+
   return {
-    intent: 'reservation',
+    intent: 'reservation_create',
     date: req.date,
     start_time: req.time,
-    end_time: req.endTime ?? null,
+    end_time: endTime,
     people: req.capacity,
     room_type: req.room,
     status: hasConflict ? 'conflict' : 'available',
-    alternatives: suggestions.map(s => ({ label: s.label, time: s.time, room: s.room })),
+    alternatives: suggestions.map(s => ({
+      start_time: s.time,
+      end_time: s.endTime ?? computeEndTime(s.time, req.duration),
+      room_type: s.room,
+    })),
   };
 }
 
