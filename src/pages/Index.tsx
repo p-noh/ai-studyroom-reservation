@@ -4,11 +4,19 @@ import ChatPanel from '@/components/ChatPanel';
 import Timetable from '@/components/Timetable';
 import ParsedRequestCard from '@/components/ParsedRequestCard';
 import ReservationAnalytics from '@/components/ReservationAnalytics';
-import { getInitialSchedule, getTimesInRange, type TimeSlot, type RoomType, type ParsedRequest } from '@/lib/reservation';
+import AIDebugLog from '@/components/AIDebugLog';
+import { getInitialSchedule, getTimesInRange, type TimeSlot, type RoomType, type ParsedRequest, type Suggestion } from '@/lib/reservation';
+
+interface DebugInfo {
+  parsed: ParsedRequest | null;
+  suggestions: Suggestion[];
+  hasConflict: boolean;
+}
 
 export default function Index() {
   const [schedule, setSchedule] = useState<TimeSlot[]>(getInitialSchedule);
   const [parsedRequest, setParsedRequest] = useState<ParsedRequest | null>(null);
+  const [debugInfo, setDebugInfo] = useState<DebugInfo>({ parsed: null, suggestions: [], hasConflict: false });
 
   const handleConfirm = useCallback((time: string, room: RoomType, endTime?: string) => {
     const times = endTime ? getTimesInRange(time, endTime) : [time];
