@@ -11,11 +11,18 @@ interface CancelTarget {
   label: string;
 }
 
+interface DebugInfo {
+  parsed: ParsedRequest | null;
+  suggestions: Suggestion[];
+  hasConflict: boolean;
+}
+
 interface ChatPanelProps {
   schedule: TimeSlot[];
   onConfirm: (time: string, room: RoomType, endTime?: string) => void;
   onCancel: (times: string[], room: RoomType) => void;
   onParsedRequest: (req: ParsedRequest | null) => void;
+  onDebugInfo: (info: DebugInfo) => void;
 }
 
 function TypingIndicator() {
