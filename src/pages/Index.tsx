@@ -18,32 +18,36 @@ export default function Index() {
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-background">
       {/* Header */}
-      <header className="border-b bg-card px-6 py-3">
-        <div className="mx-auto flex max-w-7xl items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <CalendarDays className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <div>
-            <h1 className="flex items-center gap-1.5 text-base font-bold">
-              스터디룸 예약 시스템
-              <Sparkles className="h-4 w-4 text-primary" />
-            </h1>
-            <p className="text-xs text-muted-foreground">AI 기반 스마트 예약 도우미</p>
+      <header className="border-b border-border bg-card px-6 py-5 shadow-sm">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary shadow-md">
+              <CalendarDays className="h-6 w-6 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="flex items-center gap-2 text-xl font-bold text-foreground">
+                AI 기반 스터디룸 예약 시스템
+                <Sparkles className="h-5 w-5 text-primary" />
+              </h1>
+              <p className="mt-0.5 text-sm text-muted-foreground">
+                자연어 예약 요청을 이해하고 예약 충돌 시 대안을 추천하는 스마트 예약 도우미
+              </p>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main */}
-      <main className="mx-auto flex w-full max-w-7xl flex-1 gap-5 p-5">
-        {/* Left — Chat (5 parts) */}
-        <section className="flex w-5/12 flex-col" style={{ minHeight: 'calc(100vh - 120px)' }}>
+      <main className="mx-auto flex w-full max-w-7xl flex-1 gap-6 p-6">
+        {/* Left — Chat */}
+        <section className="flex w-5/12 flex-col" style={{ minHeight: 'calc(100vh - 140px)' }}>
           <ChatPanel schedule={schedule} onConfirm={handleConfirm} onParsedRequest={setParsedRequest} />
         </section>
 
-        {/* Right — Dashboard (7 parts) */}
-        <section className="flex w-7/12 flex-col gap-4">
+        {/* Right — Dashboard */}
+        <section className="flex w-7/12 flex-col gap-5">
           <Timetable schedule={schedule} />
           <ParsedRequestCard request={parsedRequest} />
         </section>

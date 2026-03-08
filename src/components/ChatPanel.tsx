@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User } from 'lucide-react';
+import { Send, Bot, User, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { ChatMessage, TimeSlot, RoomType } from '@/lib/reservation';
@@ -9,6 +9,39 @@ interface ChatPanelProps {
   schedule: TimeSlot[];
   onConfirm: (time: string, room: RoomType) => void;
   onParsedRequest: (req: { date: string; time: string; capacity: number; room: RoomType } | null) => void;
+}
+
+function TypingIndicator() {
+  return (
+    <div className="flex animate-fade-in items-start gap-2">
+      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary shadow-sm">
+        <Bot className="h-3.5 w-3.5 text-primary-foreground" />
+      </div>
+      <div className="rounded-2xl rounded-tl-sm bg-chat-ai px-4 py-3">
+        <div className="flex items-center gap-1.5">
+          <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50 [animation-delay:0ms]" />
+          <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50 [animation-delay:150ms]" />
+          <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50 [animation-delay:300ms]" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ConfirmationBanner() {
+  return (
+    <div className="flex animate-fade-in items-start gap-2">
+      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-confirmed shadow-sm">
+        <CheckCircle2 className="h-3.5 w-3.5 text-confirmed-foreground" />
+      </div>
+      <div className="rounded-2xl rounded-tl-sm border border-confirmed/30 bg-confirmed/10 px-4 py-3">
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="h-4 w-4 text-confirmed" />
+          <span className="text-sm font-semibold text-confirmed">예약이 확정되었습니다!</span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function ChatPanel({ schedule, onConfirm, onParsedRequest }: ChatPanelProps) {
@@ -21,11 +54,12 @@ export default function ChatPanel({ schedule, onConfirm, onParsedRequest }: Chat
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isTyping]);
+  }, [messages, isTyping, showConfirmation]);
 
   const handleSend = () => {
     const text = input.trim();
@@ -59,60 +93,68 @@ export default function ChatPanel({ schedule, onConfirm, onParsedRequest }: Chat
       }
       setMessages(prev => [...prev, aiMsg]);
       setIsTyping(false);
-    }, 800);
+    }, 1200);
   };
 
   const handleSuggestionClick = (time: string, room: RoomType) => {
     onConfirm(time, room);
-    const confirmMsg: ChatMessage = {
-      id: Date.now().toString(),
-      role: 'ai',
-      content: `✅ ${time} ${room} 예약이 확정되었습니다.\n즐거운 스터디 되세요!`,
-    };
-    setMessages(prev => [...prev, confirmMsg]);
+    setShowConfirmation(true);
+
+    setTimeout(() => {
+      const confirmMsg: ChatMessage = {
+        id: Date.now().toString(),
+        role: 'ai',
+        content: `✅ ${time} ${room} 예약이 확정되었습니다.\n즐거운 스터디 되세요!`,
+      };
+      setMessages(prev => [...prev, confirmMsg]);
+      setShowConfirmation(false);
+    }, 1500);
   };
 
   return (
-    <div className="flex h-full flex-col rounded-lg border bg-card shadow-sm">
+    <div className="flex h-full flex-col rounded-xl border border-border bg-card shadow-lg">
       {/* Header */}
-      <div className="flex items-center gap-2 border-b px-4 py-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
-          <Bot className="h-4 w-4 text-primary-foreground" />
+      <div className="flex items-center gap-3 border-b border-border px-5 py-4">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
+          <Bot className="h-5 w-5 text-primary-foreground" />
         </div>
         <div>
-          <h2 className="text-sm font-semibold">AI 예약 도우미</h2>
-          <p className="text-xs text-muted-foreground">자연어로 예약을 도와드립니다</p>
+          <h2 className="text-base font-bold text-foreground">AI 예약 도우미</h2>
+          <div className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-confirmed animate-pulse" />
+            <p className="text-xs text-muted-foreground">온라인 · 자연어로 예약을 도와드립니다</p>
+          </div>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 space-y-3 overflow-y-auto p-4">
+      <div className="flex-1 space-y-4 overflow-y-auto px-5 py-5">
         {messages.map(msg => (
           <div key={msg.id} className={`flex animate-fade-in ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className="flex max-w-[85%] gap-2">
               {msg.role === 'ai' && (
-                <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary">
-                  <Bot className="h-3 w-3 text-primary-foreground" />
+                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary shadow-sm">
+                  <Bot className="h-3.5 w-3.5 text-primary-foreground" />
                 </div>
               )}
               <div>
                 <div
-                  className={`rounded-lg px-3 py-2 text-sm whitespace-pre-line ${
+                  className={`text-sm leading-relaxed whitespace-pre-line shadow-sm ${
                     msg.role === 'user'
-                      ? 'bg-chat-user text-chat-user-foreground'
-                      : 'bg-chat-ai text-chat-ai-foreground'
+                      ? 'rounded-2xl rounded-tr-sm bg-chat-user px-4 py-3 text-chat-user-foreground'
+                      : 'rounded-2xl rounded-tl-sm bg-chat-ai px-4 py-3 text-chat-ai-foreground'
                   }`}
                 >
                   {msg.content}
                 </div>
                 {msg.suggestions && msg.suggestions.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-2">
+                  <div className="mt-2.5 flex flex-wrap gap-2">
                     {msg.suggestions.map((s, i) => (
                       <Button
                         key={i}
                         size="sm"
                         variant="outline"
-                        className="border-primary text-primary hover:bg-accent"
+                        className="rounded-full border-primary/50 text-primary shadow-sm transition-all duration-200 hover:bg-primary hover:text-primary-foreground hover:shadow-md"
                         onClick={() => handleSuggestionClick(s.time, s.room)}
                       >
                         {s.label}
@@ -122,28 +164,20 @@ export default function ChatPanel({ schedule, onConfirm, onParsedRequest }: Chat
                 )}
               </div>
               {msg.role === 'user' && (
-                <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary">
-                  <User className="h-3 w-3 text-secondary-foreground" />
+                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary shadow-sm">
+                  <User className="h-3.5 w-3.5 text-secondary-foreground" />
                 </div>
               )}
             </div>
           </div>
         ))}
-        {isTyping && (
-          <div className="flex animate-fade-in items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary">
-              <Bot className="h-3 w-3 text-primary-foreground" />
-            </div>
-            <div className="rounded-lg bg-chat-ai px-3 py-2 text-sm text-muted-foreground">
-              입력 중...
-            </div>
-          </div>
-        )}
+        {isTyping && <TypingIndicator />}
+        {showConfirmation && <ConfirmationBanner />}
         <div ref={bottomRef} />
       </div>
 
       {/* Input */}
-      <div className="border-t p-3">
+      <div className="border-t border-border p-4">
         <form
           className="flex gap-2"
           onSubmit={e => {
@@ -155,9 +189,14 @@ export default function ChatPanel({ schedule, onConfirm, onParsedRequest }: Chat
             value={input}
             onChange={e => setInput(e.target.value)}
             placeholder="예약 요청을 입력하세요..."
-            className="flex-1"
+            className="flex-1 rounded-full border-border bg-muted/50 px-4 focus-visible:ring-primary"
           />
-          <Button type="submit" size="icon" disabled={!input.trim()}>
+          <Button
+            type="submit"
+            size="icon"
+            disabled={!input.trim()}
+            className="rounded-full shadow-sm"
+          >
             <Send className="h-4 w-4" />
           </Button>
         </form>
