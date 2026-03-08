@@ -58,7 +58,7 @@ function ConfirmationBanner() {
   );
 }
 
-export default function ChatPanel({ schedule, onConfirm, onCancel, onParsedRequest }: ChatPanelProps) {
+export default function ChatPanel({ schedule, onConfirm, onCancel, onParsedRequest, onDebugInfo }: ChatPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '0',
