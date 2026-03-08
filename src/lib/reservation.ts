@@ -215,7 +215,7 @@ export function generateResponse(
   // Check full availability
   if (isRangeAvailable(schedule, request.room, requestTimes)) {
     return {
-      content: `${request.date} ${timeLabel} ${request.room} 예약이 가능합니다. 예약을 진행할까요?`,
+      content: `${request.date} ${timeLabel} ${request.room}(${request.capacity}명) 예약이 가능합니다.\n예약을 진행할까요?`,
       suggestions: [{
         label: makeSuggestionLabel(request.time, dur > 1 ? endTime : undefined, request.room),
         time: request.time,
@@ -225,13 +225,25 @@ export function generateResponse(
     };
   }
 
-  // Conflicts found
+  // Conflicts found — build detailed explanation
   const conflicts = getConflicts(schedule, request.room, requestTimes);
-  const conflictStr = conflicts.join(', ');
   const alternatives = findAlternatives(schedule, request);
 
-  return {
-    content: `${timeLabel} ${request.room}의 ${conflictStr} 시간대가 이미 예약되어 있습니다.\n대신 아래 옵션을 추천드립니다:`,
-    suggestions: alternatives,
-  };
+  let content = `요청하신 ${request.date} ${timeLabel} ${request.room} 예약을 확인했습니다.\n\n`;
+  content += `❌ ${request.room}의 ${conflicts.join(', ')} 시간대는 이미 다른 예약이 있어 이용이 불가합니다.\n\n`;
+
+  if (alternatives.length > 0) {
+    content += '대안을 분석한 결과, 아래 옵션을 추천드립니다:\n';
+    alternatives.forEach(alt => {
+      if (alt.room === request.room) {
+        content += `\n• ${alt.label} — 같은 ${alt.room}의 가장 가까운 시간대`;
+      } else {
+        content += `\n• ${alt.label} — 같은 시간대의 더 넓은 방`;
+      }
+    });
+  } else {
+    content += '안타깝게도 적합한 대안을 찾지 못했습니다.\n다른 시간이나 날짜를 요청해 주세요.';
+  }
+
+  return { content, suggestions: alternatives };
 }
