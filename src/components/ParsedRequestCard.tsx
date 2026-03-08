@@ -1,4 +1,4 @@
-import { FileText } from 'lucide-react';
+import { FileText, Brain } from 'lucide-react';
 import type { ParsedRequest } from '@/lib/reservation';
 
 interface Props {
@@ -7,35 +7,38 @@ interface Props {
 
 export default function ParsedRequestCard({ request }: Props) {
   return (
-    <div className="rounded-lg border bg-card p-4 shadow-sm">
-      <div className="mb-3 flex items-center gap-2">
-        <FileText className="h-4 w-4 text-primary" />
-        <h3 className="text-sm font-semibold">예약 요청 분석</h3>
+    <div className="rounded-xl border border-border bg-card p-6 shadow-lg">
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+          <Brain className="h-5 w-5 text-primary" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-foreground">예약 요청 분석</h3>
+          <p className="text-xs text-muted-foreground">AI Parsed Request</p>
+        </div>
       </div>
 
       {request ? (
-        <div className="animate-fade-in space-y-2 text-sm">
-          <div className="flex justify-between rounded bg-muted px-3 py-1.5">
-            <span className="text-muted-foreground">날짜</span>
-            <span className="font-medium">{request.date}</span>
-          </div>
-          <div className="flex justify-between rounded bg-muted px-3 py-1.5">
-            <span className="text-muted-foreground">시간</span>
-            <span className="font-medium">{request.time}</span>
-          </div>
-          <div className="flex justify-between rounded bg-muted px-3 py-1.5">
-            <span className="text-muted-foreground">인원</span>
-            <span className="font-medium">{request.capacity}명</span>
-          </div>
-          <div className="flex justify-between rounded bg-muted px-3 py-1.5">
-            <span className="text-muted-foreground">스터디룸</span>
-            <span className="font-medium">{request.room}</span>
-          </div>
+        <div className="animate-fade-in space-y-2.5 text-sm">
+          {[
+            { label: '날짜', value: request.date },
+            { label: '시간', value: request.time },
+            { label: '인원', value: `${request.capacity}명` },
+            { label: '스터디룸', value: request.room },
+          ].map(({ label, value }) => (
+            <div key={label} className="flex items-center justify-between rounded-lg bg-muted/60 px-4 py-2.5">
+              <span className="text-muted-foreground">{label}</span>
+              <span className="font-semibold text-foreground">{value}</span>
+            </div>
+          ))}
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">
-          채팅으로 예약을 요청하시면 AI가 분석한 결과가 여기에 표시됩니다.
-        </p>
+        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-8 text-center">
+          <FileText className="mb-2 h-8 w-8 text-muted-foreground/40" />
+          <p className="text-sm text-muted-foreground">
+            채팅으로 예약을 요청하시면<br />AI가 분석한 결과가 여기에 표시됩니다.
+          </p>
+        </div>
       )}
     </div>
   );
