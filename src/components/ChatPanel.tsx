@@ -156,7 +156,7 @@ export default function ChatPanel({ schedule, onConfirm, onParsedRequest }: Chat
                         size="sm"
                         variant="outline"
                         className="rounded-full border-primary/50 text-primary shadow-sm transition-all duration-200 hover:bg-primary hover:text-primary-foreground hover:shadow-md"
-                        onClick={() => handleSuggestionClick(s.time, s.room)}
+                        onClick={() => handleSuggestionClick(s)}
                       >
                         {s.label}
                       </Button>
