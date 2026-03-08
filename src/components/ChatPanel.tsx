@@ -105,7 +105,7 @@ export default function ChatPanel({ schedule, onConfirm, onParsedRequest }: Chat
       const confirmMsg: ChatMessage = {
         id: Date.now().toString(),
         role: 'ai',
-        content: `✅ ${time} ${room} 예약이 확정되었습니다.\n즐거운 스터디 되세요!`,
+        content: `✅ ${timeLabel} ${s.room} 예약이 확정되었습니다.\n즐거운 스터디 되세요!`,
       };
       setMessages(prev => [...prev, confirmMsg]);
       setShowConfirmation(false);
