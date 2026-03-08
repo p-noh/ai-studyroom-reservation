@@ -3,6 +3,7 @@ import { CalendarDays, Sparkles } from 'lucide-react';
 import ChatPanel from '@/components/ChatPanel';
 import Timetable from '@/components/Timetable';
 import ParsedRequestCard from '@/components/ParsedRequestCard';
+import ReservationAnalytics from '@/components/ReservationAnalytics';
 import { getInitialSchedule, getTimesInRange, type TimeSlot, type RoomType, type ParsedRequest } from '@/lib/reservation';
 
 export default function Index() {
