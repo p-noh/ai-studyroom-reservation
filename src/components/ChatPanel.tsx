@@ -129,7 +129,7 @@ export default function ChatPanel({ schedule, onConfirm, onParsedRequest }: Chat
       </div>
 
       {/* Messages */}
-      <div className="flex-1 space-y-4 overflow-y-auto px-5 py-5">
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-5">
         {messages.map(msg => (
           <div key={msg.id} className={`flex animate-fade-in ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className="flex max-w-[85%] gap-2">
