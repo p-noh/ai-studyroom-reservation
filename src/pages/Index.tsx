@@ -42,14 +42,14 @@ export default function Index() {
       </header>
 
       {/* Main */}
-      <main className="mx-auto flex w-full max-w-7xl flex-1 gap-6 p-6">
+      <main className="mx-auto flex w-full max-w-7xl flex-1 gap-6 overflow-hidden p-6">
         {/* Left — Chat */}
-        <section className="flex w-5/12 flex-col" style={{ minHeight: 'calc(100vh - 140px)' }}>
+        <section className="flex w-5/12 flex-col overflow-hidden">
           <ChatPanel schedule={schedule} onConfirm={handleConfirm} onParsedRequest={setParsedRequest} />
         </section>
 
         {/* Right — Dashboard */}
-        <section className="flex w-7/12 flex-col gap-5">
+        <section className="w-7/12 space-y-5 overflow-y-auto">
           <Timetable schedule={schedule} />
           <ParsedRequestCard request={parsedRequest} />
           <ReservationAnalytics schedule={schedule} />
