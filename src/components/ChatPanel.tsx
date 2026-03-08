@@ -11,11 +11,18 @@ interface CancelTarget {
   label: string;
 }
 
+interface DebugInfo {
+  parsed: ParsedRequest | null;
+  suggestions: Suggestion[];
+  hasConflict: boolean;
+}
+
 interface ChatPanelProps {
   schedule: TimeSlot[];
   onConfirm: (time: string, room: RoomType, endTime?: string) => void;
   onCancel: (times: string[], room: RoomType) => void;
   onParsedRequest: (req: ParsedRequest | null) => void;
+  onDebugInfo: (info: DebugInfo) => void;
 }
 
 function TypingIndicator() {
@@ -51,7 +58,7 @@ function ConfirmationBanner() {
   );
 }
 
-export default function ChatPanel({ schedule, onConfirm, onCancel, onParsedRequest }: ChatPanelProps) {
+export default function ChatPanel({ schedule, onConfirm, onCancel, onParsedRequest, onDebugInfo }: ChatPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '0',
@@ -239,9 +246,11 @@ export default function ChatPanel({ schedule, onConfirm, onCancel, onParsedReque
         aiMsg = { id: (Date.now() + 1).toString(), role: 'ai', content: result.content };
         if (result.cancelTarget) setPendingCancel(result.cancelTarget);
         onParsedRequest(null);
+        onDebugInfo({ parsed: null, suggestions: [], hasConflict: false });
       } else if (isLookupCommand(text)) {
         aiMsg = { id: (Date.now() + 1).toString(), role: 'ai', content: buildLookupResponse() };
         onParsedRequest(null);
+        onDebugInfo({ parsed: null, suggestions: [], hasConflict: false });
       } else {
         const parsed = parseRequest(text);
         onParsedRequest(parsed);
@@ -252,8 +261,10 @@ export default function ChatPanel({ schedule, onConfirm, onCancel, onParsedReque
             role: 'ai',
             content: '죄송합니다. 요청을 이해하지 못했습니다.\n시간과 인원 수를 포함해서 다시 말씀해 주세요.\n\n예시: "내일 오후 3시에 6명 예약"',
           };
+          onDebugInfo({ parsed: null, suggestions: [], hasConflict: false });
         } else {
           const response = generateResponse(schedule, parsed);
+          const hasConflict = !!(response.suggestions && response.suggestions.length > 0);
           aiMsg = {
             id: (Date.now() + 1).toString(),
             role: 'ai',
@@ -261,6 +272,7 @@ export default function ChatPanel({ schedule, onConfirm, onCancel, onParsedReque
             suggestions: response.suggestions,
             parsedRequest: parsed,
           };
+          onDebugInfo({ parsed, suggestions: response.suggestions || [], hasConflict });
         }
       }
 
