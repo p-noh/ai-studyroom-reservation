@@ -22,7 +22,8 @@ export default function ParsedRequestCard({ request }: Props) {
         <div className="animate-fade-in space-y-2.5 text-sm">
           {[
             { label: '날짜', value: request.date },
-            { label: '시간', value: request.time },
+            { label: '시간', value: request.endTime ? `${request.time}–${request.endTime}` : request.time },
+            { label: '예약 시간', value: `${request.duration}시간` },
             { label: '인원', value: `${request.capacity}명` },
             { label: '스터디룸', value: request.room },
           ].map(({ label, value }) => (

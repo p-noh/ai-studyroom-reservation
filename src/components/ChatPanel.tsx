@@ -2,13 +2,13 @@ import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { ChatMessage, TimeSlot, RoomType } from '@/lib/reservation';
-import { parseRequest, generateResponse } from '@/lib/reservation';
+import type { ChatMessage, TimeSlot, RoomType, Suggestion } from '@/lib/reservation';
+import { parseRequest, generateResponse, type ParsedRequest } from '@/lib/reservation';
 
 interface ChatPanelProps {
   schedule: TimeSlot[];
-  onConfirm: (time: string, room: RoomType) => void;
-  onParsedRequest: (req: { date: string; time: string; capacity: number; room: RoomType } | null) => void;
+  onConfirm: (time: string, room: RoomType, endTime?: string) => void;
+  onParsedRequest: (req: ParsedRequest | null) => void;
 }
 
 function TypingIndicator() {
@@ -96,15 +96,16 @@ export default function ChatPanel({ schedule, onConfirm, onParsedRequest }: Chat
     }, 1200);
   };
 
-  const handleSuggestionClick = (time: string, room: RoomType) => {
-    onConfirm(time, room);
+  const handleSuggestionClick = (s: Suggestion) => {
+    onConfirm(s.time, s.room, s.endTime);
     setShowConfirmation(true);
 
     setTimeout(() => {
+      const timeLabel = s.endTime ? `${s.time}–${s.endTime}` : s.time;
       const confirmMsg: ChatMessage = {
         id: Date.now().toString(),
         role: 'ai',
-        content: `✅ ${time} ${room} 예약이 확정되었습니다.\n즐거운 스터디 되세요!`,
+        content: `✅ ${timeLabel} ${s.room} 예약이 확정되었습니다.\n즐거운 스터디 되세요!`,
       };
       setMessages(prev => [...prev, confirmMsg]);
       setShowConfirmation(false);
@@ -155,7 +156,7 @@ export default function ChatPanel({ schedule, onConfirm, onParsedRequest }: Chat
                         size="sm"
                         variant="outline"
                         className="rounded-full border-primary/50 text-primary shadow-sm transition-all duration-200 hover:bg-primary hover:text-primary-foreground hover:shadow-md"
-                        onClick={() => handleSuggestionClick(s.time, s.room)}
+                        onClick={() => handleSuggestionClick(s)}
                       >
                         {s.label}
                       </Button>
