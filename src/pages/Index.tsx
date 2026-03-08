@@ -63,7 +63,7 @@ export default function Index() {
       <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 overflow-hidden p-4 md:flex-row md:gap-6 md:p-6">
         {/* Chat */}
         <section className="flex h-[60vh] flex-col overflow-hidden md:h-auto md:w-[47%]">
-          <ChatPanel schedule={schedule} onConfirm={handleConfirm} onCancel={handleCancel} onParsedRequest={setParsedRequest} />
+          <ChatPanel schedule={schedule} onConfirm={handleConfirm} onCancel={handleCancel} onParsedRequest={setParsedRequest} onDebugInfo={setDebugInfo} />
         </section>
 
         {/* Dashboard */}
@@ -73,6 +73,8 @@ export default function Index() {
           <ReservationAnalytics schedule={schedule} />
         </section>
       </main>
+
+      <AIDebugLog parsedRequest={debugInfo.parsed} suggestions={debugInfo.suggestions} hasConflict={debugInfo.hasConflict} />
     </div>
   );
 }
