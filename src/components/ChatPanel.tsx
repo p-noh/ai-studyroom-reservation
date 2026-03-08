@@ -3,7 +3,7 @@ import { Send, Bot, User, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { ChatMessage, TimeSlot, RoomType, Suggestion } from '@/lib/reservation';
-import { parseRequest, generateResponse } from '@/lib/reservation';
+import { parseRequest, generateResponse, type ParsedRequest } from '@/lib/reservation';
 
 interface ChatPanelProps {
   schedule: TimeSlot[];
