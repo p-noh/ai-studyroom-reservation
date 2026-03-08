@@ -78,8 +78,8 @@ export function parseRequest(text: string): ParsedRequest | null {
   let startHour: number | null = null;
   let endHour: number | null = null;
 
-  // Range pattern: "14-16시", "14~16시", "14시-16시", "14시~16시", "14시부터 16시"
-  const rangeMatch = text.match(/(\d{1,2})\s*시?\s*[-~부터]\s*(\d{1,2})\s*시/);
+  // Range pattern: "14-16시", "14~16시", "14시-16시", "14시~16시", "14시부터 16시까지", "11시부터 15시까지"
+  const rangeMatch = text.match(/(\d{1,2})\s*시?\s*(?:[-~]|부터)\s*(\d{1,2})\s*시/);
   if (rangeMatch) {
     startHour = parseInt(rangeMatch[1]);
     endHour = parseInt(rangeMatch[2]);
