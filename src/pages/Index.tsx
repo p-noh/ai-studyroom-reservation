@@ -19,6 +19,16 @@ export default function Index() {
     );
   }, []);
 
+  const handleCancel = useCallback((times: string[], room: RoomType) => {
+    setSchedule(prev =>
+      prev.map(slot =>
+        times.includes(slot.time) && slot.room === room && slot.status === 'confirmed'
+          ? { ...slot, status: 'available' as const }
+          : slot
+      )
+    );
+  }, []);
+
   return (
     <div className="flex h-screen flex-col bg-background overflow-hidden">
       {/* Header */}
