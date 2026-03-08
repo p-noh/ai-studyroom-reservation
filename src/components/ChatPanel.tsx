@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { ChatMessage, TimeSlot, RoomType } from '@/lib/reservation';
+import type { ChatMessage, TimeSlot, RoomType, Suggestion } from '@/lib/reservation';
 import { parseRequest, generateResponse } from '@/lib/reservation';
 
 interface ChatPanelProps {
