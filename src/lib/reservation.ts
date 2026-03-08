@@ -74,6 +74,15 @@ export function getTimesInRange(startTime: string, endTime: string): string[] {
   return result;
 }
 
+/** Resolve ambiguous hour: if no 오전/오후 and hour is 1-8, assume PM */
+function resolveAmbiguousHour(hour: number, text: string): number {
+  if (text.includes('오전')) return hour === 12 ? 0 : hour;
+  if (text.includes('오후')) return hour < 12 ? hour + 12 : hour;
+  // No explicit marker: if hour is small (1-8), assume afternoon
+  if (hour >= 1 && hour <= 8) return hour + 12;
+  return hour;
+}
+
 export function parseRequest(text: string): ParsedRequest | null {
   let startHour: number | null = null;
   let endHour: number | null = null;
@@ -81,21 +90,15 @@ export function parseRequest(text: string): ParsedRequest | null {
   // Range pattern: "14-16시", "14~16시", "14시-16시", "14시~16시", "14시부터 16시까지", "11시부터 15시까지"
   const rangeMatch = text.match(/(\d{1,2})\s*시?\s*(?:[-~]|부터)\s*(\d{1,2})\s*시/);
   if (rangeMatch) {
-    startHour = parseInt(rangeMatch[1]);
-    endHour = parseInt(rangeMatch[2]);
-    if (text.includes('오후')) {
-      if (startHour < 12) startHour += 12;
-      if (endHour < 12) endHour += 12;
-    }
+    startHour = resolveAmbiguousHour(parseInt(rangeMatch[1]), text);
+    endHour = resolveAmbiguousHour(parseInt(rangeMatch[2]), text);
   }
 
   // Single time: "14시", "오후 2시"
   if (startHour === null) {
     const timeMatch = text.match(/(\d{1,2})\s*시/);
     if (timeMatch) {
-      startHour = parseInt(timeMatch[1]);
-      if (text.includes('오후') && startHour < 12) startHour += 12;
-      if (text.includes('오전') && startHour === 12) startHour = 0;
+      startHour = resolveAmbiguousHour(parseInt(timeMatch[1]), text);
     }
   }
 
