@@ -1,73 +1,193 @@
-# Welcome to your Lovable project
+# AI 기반 스터디룸 예약 시스템
 
-## Project info
+자연어 처리를 통한 스터디룸 예약 시스템의 프로토타입입니다. 사용자가 자연스러운 한국어로 예약 요청을 하면, AI가 의도를 분석하고 예약 가능 여부를 판단한 후 대안을 제시합니다.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 📋 프로젝트 개요
 
-## How can I edit this code?
+이 프로젝트는 **자연어 기반 스터디룸 예약 시스템**입니다. 사용자는 채팅 인터페이스를 통해 자연스럽게 예약을 요청할 수 있으며, 시스템은 다음 작업을 수행합니다:
 
-There are several ways of editing your application.
+- 자연어 요청을 구조화된 예약 데이터로 변환
+- 실시간 예약 충돌 감지
+- 이용 가능한 대체 시간대 자동 추천
+- 사용자 예약 현황 조회 및 관리
 
-**Use Lovable**
+## ✨ 주요 기능
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### 1. **자연어 예약 요청**
+사용자가 한국어로 자연스럽게 예약을 요청하면 AI가 의도를 인식합니다.
+- 다양한 시간 표현 지원: "4시", "오후 4시", "16시", "4시부터 6시까지" 등
+- 자동 시간 해석: 오전/오후 명시 없이 "4시"라고 하면 오후 4시로 자동 해석
+- 인원 수 및 방 크기 자동 감지
 
-Changes made via Lovable will be committed automatically to this repo.
+### 2. **예약 충돌 감지**
+시스템은 요청된 시간에 다른 예약이 있는지 실시간으로 확인합니다.
+- 충돌하는 시간대 명시
+- 진행 중인 예약(확정된 예약)과 기존 예약 구분
 
-**Use your preferred IDE**
+### 3. **대체 옵션 자동 추천**
+예약이 불가능할 경우, 다음 우선순위로 대안을 제시합니다:
+- 같은 방에서 다음 가능한 시간대
+- 같은 시간에 더 큰 방
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 4. **시간대 예약**
+단일 시간뿐만 아니라 시간대 예약을 지원합니다.
+- "14시부터 16시까지" → 14:00, 15:00, 16:00 시간대 예약
+- 범위 내 모든 시간대 확인
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 5. **예약 현황 조회**
+"내 예약 보여줘" 명령으로 현재 예약 현황을 확인할 수 있습니다.
+- 확정된 모든 예약 목록
+- 예약 시간대 및 방 정보
 
-Follow these steps:
+### 6. **예약 취소**
+"내 예약 취소해줘" 명령으로 예약을 취소할 수 있습니다.
+- 복수 예약 취소 지원
+- 취소 후 해당 시간대 재예약 가능
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### 7. **예약 분석**
+시각적 대시보드를 통한 예약 현황 분석:
+- 방별 점유율 차트
+- 시간별 예약 현황
+- 통계 정보
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### 8. **AI Debug Log**
+개발자 모드: 우측 하단에 AI 파싱 결과를 JSON 형식으로 표시합니다.
+- 인식된 의도(intent)
+- 파싱된 날짜, 시간, 인원, 방 타입
+- 예약 상태 및 대체 옵션
 
-# Step 3: Install the necessary dependencies.
-npm i
+## 🔄 시스템 흐름
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+사용자 입력
+    ↓
+자연어 파싱 (parseRequest)
+    ↓
+구조화된 데이터 생성 (ParsedRequest)
+    ├─ date: 예약 날짜
+    ├─ time: 시작 시간
+    ├─ endTime: 종료 시간
+    ├─ duration: 예약 시간
+    ├─ capacity: 인원 수
+    └─ room: 방 타입
+    ↓
+예약 가능 여부 판단 (generateResponse)
+    ├─ 예약 가능 → 예약 제시
+    └─ 충돌 발생 → 대안 추천
+    ↓
+AI Debug Log에 JSON 출력
+    ↓
+사용자에게 결과 표시
 ```
 
-**Edit a file directly in GitHub**
+## 💬 사용 예시
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### 기본 예약
+```
+사용자: "내일 4시부터 6시 4명 예약"
+AI: "내일 16:00–18:00 4인실(4명) 예약이 가능합니다. 예약을 진행할까요?"
+```
 
-**Use GitHub Codespaces**
+### 시간 해석
+```
+사용자: "내일 오후 4시부터 6시"
+AI: "내일 16:00–18:00 4인실 예약이 가능합니다."
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+사용자: "내일 4시"  (오전/오후 명시 없음)
+AI: "내일 16:00 4인실 예약이 가능합니다." (자동으로 오후로 해석)
+```
 
-## What technologies are used for this project?
+### 충돌 발생 시
+```
+사용자: "내일 14시부터 16시 6명"
+AI: "❌ 6인실의 14:00, 16:00 시간대는 이미 다른 예약이 있어 이용이 불가합니다.
+     대안을 분석한 결과, 아래 옵션을 추천드립니다:
+     • 15:00–16:00 6인실 예약 — 같은 6인실의 가장 가까운 시간대
+     • 14:00–16:00 8인실 예약 — 같은 시간대의 더 넓은 방"
+```
 
-This project is built with:
+### 예약 조회
+```
+사용자: "내 예약 보여줘"
+AI: "현재 확정된 예약:
+     • 16:00 4인실
+     • 16:00–18:00 6인실"
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### 예약 취소
+```
+사용자: "내 예약 취소해줘"
+AI: "다음 예약들을 취소하시겠어요? [확인 / 유지]"
+```
 
-## How can I deploy this project?
+## 🛠 기술 하이라이트
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### 자연어 파싱
+- **정규식 기반 해석**: 다양한 한국어 시간 표현을 정규식으로 분석
+- **의도 감지**: 예약, 조회, 취소 등의 사용자 의도 자동 인식
+- **모호한 표현 처리**: "4시"와 같이 오전/오후가 명시되지 않은 경우, 맥락에 따라 자동 해석
 
-## Can I connect a custom domain to my Lovable project?
+### 구조화된 JSON 형식
+모든 예약 요청은 다음과 같은 구조로 변환됩니다:
+```json
+{
+  "intent": "reservation_create",
+  "date": "내일",
+  "start_time": "16:00",
+  "end_time": "18:00",
+  "people": 4,
+  "room_type": "4인실",
+  "status": "available",
+  "alternatives": []
+}
+```
 
-Yes, you can!
+### 실시간 충돌 감지
+- 예약 요청 시 실시간으로 충돌 여부 판단
+- 일부 시간대만 충돌할 경우 세부 정보 제시
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### 지능형 대안 추천
+1. 같은 방에서 다음 가능한 시간 제시
+2. 같은 시간에 더 큰 방 추천
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### 개발자 친화적 Debug Log
+- AI의 파싱 결과를 실시간으로 JSON 형식으로 표시
+- 자연어 처리 과정의 투명성 확보
+
+## 📱 사용 기술
+
+- **Frontend**: React + TypeScript
+- **UI Components**: shadcn/ui (Radix UI 기반)
+- **Styling**: Tailwind CSS
+- **State Management**: React Hooks
+- **Chart/Analytics**: Recharts
+- **Build Tool**: Vite
+
+## ⚠️ 제한사항
+
+이 프로젝트는 **프로토타입**입니다. 다음과 같은 제한사항이 있습니다:
+
+- **Mock 데이터**: 실제 데이터베이스 없이 클라이언트 메모리에서만 데이터 관리
+- **인증 없음**: 사용자 로그인/인증 시스템 미구현
+- **단일 세션**: 새로고침 시 모든 예약 데이터 초기화
+- **제한된 시간**: 09:00–18:00 시간대만 지원
+- **제한된 방**: 4인실, 6인실, 8인실 3종류만 지원
+
+## 🚀 향후 개선 계획
+
+- [ ] 실제 데이터베이스 연동 (Supabase)
+- [ ] 사용자 인증 및 회원 관리
+- [ ] 실제 예약 날짜 선택 달력
+- [ ] 예약 알림 및 리마인더
+- [ ] 예약 취소 및 수정 기능 강화
+- [ ] 다국어 지원
+- [ ] 모바일 앱 버전
+
+## 📝 라이선스
+
+이 프로젝트는 MIT 라이선스를 따릅니다.
+
+---
+
+**만든이**: Lovable AI  
+**최종 업데이트**: 2026년 3월
