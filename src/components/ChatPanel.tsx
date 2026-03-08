@@ -7,8 +7,8 @@ import { parseRequest, generateResponse } from '@/lib/reservation';
 
 interface ChatPanelProps {
   schedule: TimeSlot[];
-  onConfirm: (time: string, room: RoomType) => void;
-  onParsedRequest: (req: { date: string; time: string; capacity: number; room: RoomType } | null) => void;
+  onConfirm: (time: string, room: RoomType, endTime?: string) => void;
+  onParsedRequest: (req: ParsedRequest | null) => void;
 }
 
 function TypingIndicator() {
