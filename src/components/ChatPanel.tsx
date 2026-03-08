@@ -113,7 +113,7 @@ export default function ChatPanel({ schedule, onConfirm, onParsedRequest }: Chat
   };
 
   return (
-    <div className="flex h-full flex-col rounded-xl border border-border bg-card shadow-lg">
+    <div className="flex h-full min-h-0 flex-col rounded-xl border border-border bg-card shadow-lg">
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-border px-5 py-4">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
