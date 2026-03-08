@@ -35,11 +35,11 @@
     --sidebar-border: 214 20% 88%;
     --sidebar-ring: 214 84% 46%;
 
-    --booked: 0 0% 75%;
-    --booked-foreground: 0 0% 35%;
-    --available: 214 84% 90%;
-    --available-foreground: 214 84% 36%;
-    --confirmed: 152 60% 45%;
+    --booked: 0 84% 56%;
+    --booked-foreground: 0 0% 100%;
+    --available: 214 84% 46%;
+    --available-foreground: 0 0% 100%;
+    --confirmed: 152 84% 39%;
     --confirmed-foreground: 0 0% 100%;
     --chat-user: 214 84% 46%;
     --chat-user-foreground: 0 0% 100%;
