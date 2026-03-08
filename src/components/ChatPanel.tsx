@@ -96,11 +96,12 @@ export default function ChatPanel({ schedule, onConfirm, onParsedRequest }: Chat
     }, 1200);
   };
 
-  const handleSuggestionClick = (time: string, room: RoomType) => {
-    onConfirm(time, room);
+  const handleSuggestionClick = (s: Suggestion) => {
+    onConfirm(s.time, s.room, s.endTime);
     setShowConfirmation(true);
 
     setTimeout(() => {
+      const timeLabel = s.endTime ? `${s.time}–${s.endTime}` : s.time;
       const confirmMsg: ChatMessage = {
         id: Date.now().toString(),
         role: 'ai',
