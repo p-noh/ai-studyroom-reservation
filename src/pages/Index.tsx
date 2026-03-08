@@ -9,10 +9,11 @@ export default function Index() {
   const [schedule, setSchedule] = useState<TimeSlot[]>(getInitialSchedule);
   const [parsedRequest, setParsedRequest] = useState<ParsedRequest | null>(null);
 
-  const handleConfirm = useCallback((time: string, room: RoomType) => {
+  const handleConfirm = useCallback((time: string, room: RoomType, endTime?: string) => {
+    const times = endTime ? getTimesInRange(time, endTime) : [time];
     setSchedule(prev =>
       prev.map(slot =>
-        slot.time === time && slot.room === room ? { ...slot, status: 'confirmed' as const } : slot
+        times.includes(slot.time) && slot.room === room ? { ...slot, status: 'confirmed' as const } : slot
       )
     );
   }, []);
