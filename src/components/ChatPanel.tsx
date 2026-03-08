@@ -61,6 +61,46 @@ export default function ChatPanel({ schedule, onConfirm, onParsedRequest }: Chat
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping, showConfirmation]);
 
+  const isLookupCommand = (text: string): boolean => {
+    const patterns = ['내 예약', '예약 확인', '예약 보여', '예약 조회', '예약 현황'];
+    return patterns.some(p => text.includes(p));
+  };
+
+  const buildLookupResponse = (): string => {
+    const confirmed = schedule.filter(s => s.status === 'confirmed');
+    if (confirmed.length === 0) {
+      return '현재 확정된 예약이 없습니다.\n새로운 예약을 원하시면 날짜, 시간, 인원을 말씀해 주세요.';
+    }
+
+    // Group consecutive confirmed slots by room
+    const grouped = new Map<RoomType, string[]>();
+    for (const slot of confirmed) {
+      const times = grouped.get(slot.room) || [];
+      times.push(slot.time);
+      grouped.set(slot.room, times);
+    }
+
+    let content = '📋 현재 확정된 예약 목록입니다:\n';
+    grouped.forEach((times, room) => {
+      times.sort();
+      // Merge consecutive times into ranges
+      let i = 0;
+      while (i < times.length) {
+        const start = times[i];
+        let endH = parseInt(start.split(':')[0]) + 1;
+        while (i + 1 < times.length && parseInt(times[i + 1].split(':')[0]) === endH) {
+          i++;
+          endH = parseInt(times[i].split(':')[0]) + 1;
+        }
+        const endTime = `${endH.toString().padStart(2, '0')}:00`;
+        content += `\n• 내일 ${start}–${endTime} ${room}`;
+        i++;
+      }
+    });
+
+    return content;
+  };
+
   const handleSend = () => {
     const text = input.trim();
     if (!text) return;
@@ -71,26 +111,37 @@ export default function ChatPanel({ schedule, onConfirm, onParsedRequest }: Chat
     setIsTyping(true);
 
     setTimeout(() => {
-      const parsed = parseRequest(text);
-      onParsedRequest(parsed);
-
       let aiMsg: ChatMessage;
-      if (!parsed) {
+
+      if (isLookupCommand(text)) {
         aiMsg = {
           id: (Date.now() + 1).toString(),
           role: 'ai',
-          content: '죄송합니다. 요청을 이해하지 못했습니다.\n시간과 인원 수를 포함해서 다시 말씀해 주세요.\n\n예시: "내일 오후 3시에 6명 예약"',
+          content: buildLookupResponse(),
         };
+        onParsedRequest(null);
       } else {
-        const response = generateResponse(schedule, parsed);
-        aiMsg = {
-          id: (Date.now() + 1).toString(),
-          role: 'ai',
-          content: response.content,
-          suggestions: response.suggestions,
-          parsedRequest: parsed,
-        };
+        const parsed = parseRequest(text);
+        onParsedRequest(parsed);
+
+        if (!parsed) {
+          aiMsg = {
+            id: (Date.now() + 1).toString(),
+            role: 'ai',
+            content: '죄송합니다. 요청을 이해하지 못했습니다.\n시간과 인원 수를 포함해서 다시 말씀해 주세요.\n\n예시: "내일 오후 3시에 6명 예약"',
+          };
+        } else {
+          const response = generateResponse(schedule, parsed);
+          aiMsg = {
+            id: (Date.now() + 1).toString(),
+            role: 'ai',
+            content: response.content,
+            suggestions: response.suggestions,
+            parsedRequest: parsed,
+          };
+        }
       }
+
       setMessages(prev => [...prev, aiMsg]);
       setIsTyping(false);
     }, 1200);
