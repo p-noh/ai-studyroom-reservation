@@ -178,7 +178,7 @@ export default function ChatPanel({ schedule, onConfirm, onParsedRequest }: Chat
       </div>
 
       {/* Input */}
-      <div className="border-t border-border p-4">
+      <div className="shrink-0 border-t border-border p-4">
         <form
           className="flex gap-2"
           onSubmit={e => {
