@@ -52,6 +52,7 @@ export default function Index() {
         <section className="flex w-7/12 flex-col gap-5">
           <Timetable schedule={schedule} />
           <ParsedRequestCard request={parsedRequest} />
+          <ReservationAnalytics schedule={schedule} />
         </section>
       </main>
     </div>
